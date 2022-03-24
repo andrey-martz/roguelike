@@ -4,24 +4,9 @@
 #include <iomanip>
 #include <vector>
 
-int main() {
-    std::vector<const wchar_t *> map{
-        L"╔═════════════════════╗\n",
-        L"║.....................║\n",
-        L"║.....................║\n",
-        L"║.....................║\n",
-        L"║.....................║\n",
-        L"║..............M...┌─┐║\n",
-        L"║......M...........┃$│║\n",
-        L"║..................└─┘║\n",
-        L"║.....................╚═══════════════╕\n",
-        L"║.....................................┇\n",
-        L"║.....................╔═══════════════╛\n",
-        L"║.....................║\n",
-        L"║.....................║\n",
-        L"╚═════════════════════╝\n"
-    };
+#include "map.cpp"
 
+int main() {
     setlocale(LC_CTYPE, "");
 
     std::ofstream log ("../log.txt", std::ios_base::app | std::ios_base::ate | std::ios_base::out);
@@ -37,22 +22,22 @@ int main() {
 	start_color();
     use_default_colors();
 
+    Map mp("/home/andrey/roguelike/map");
+
     int row, col;
     getmaxyx(stdscr, row, col);
 
     int x = 1, y = 1;
 
-    log << map[1][1] << " " << '.' << std::endl;
-
     while (true) {
         clear();
 
-        for (auto i = 0; i < map.size(); ++i) {
-            mvaddwstr(i, 0, map[i]);
+        for (auto i = 0; i < mp.height(); ++i) {
+            mvaddwstr(i, 0, mp[i].c_str());
         }
 
-        chtype c = '@' | A_BLINK;
-        mvaddch(y, x, c);
+        const wchar_t *c = L"▲";
+        mvaddwstr(y, x, c);
 
         refresh();
         chtype in = getch();
@@ -62,25 +47,25 @@ int main() {
         switch (in) {
             case KEY_UP:
             case 'W':
-                if (map[y - 1][x] == '.') {
+                if (mp[y - 1][x] == '.') {
                     --y;
                 }
             break;
             case KEY_DOWN:
             case 'S':
-                if (map[y + 1][x] == '.') {
+                if (mp[y + 1][x] == '.') {
                     ++y;
                 }
             break;
             case KEY_RIGHT:
             case 'D':
-                if (map[y][x + 1] == '.') {
+                if (mp[y][x + 1] == '.') {
                     ++x;
                 }
             break;
             case KEY_LEFT:
             case 'A':
-                if (map[y][x - 1] == '.') {
+                if (mp[y][x - 1] == '.') {
                     --x;
                 }
             break;
