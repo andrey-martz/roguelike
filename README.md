@@ -1,6 +1,7 @@
 # roguelike
 
 to-do list:
+- [ ] magnification
 - [ ] makefile?
 
 magic scheme:   
