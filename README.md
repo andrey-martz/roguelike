@@ -1,9 +1,12 @@
 # roguelike
 
 to-do list:
-- [x] map scroll (2022/03/25)
-- [x] more sophiscated map scroll (2022/03/25)
+- [ ] cofiguration file 
+- [ ] add color ehe :>
+- [ ] enemies...
 - [ ] working makefile
+- [x] more sophiscated map scroll (2022/03/25)
+- [x] map scroll (2022/03/25)
 
 magic scheme:   
 F - FIRE  
