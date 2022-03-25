@@ -2,7 +2,7 @@
 
 to-do list:
 - [x] map scroll
-- [ ] more sophiscated map scroll
+- [x] more sophiscated map scroll
 - [ ] working makefile
 
 magic scheme:   
