@@ -1,8 +1,8 @@
 # roguelike
 
 to-do list:
-- [x] map scroll
-- [x] more sophiscated map scroll
+- [x] map scroll (2022/03/25)
+- [x] more sophiscated map scroll (2022/03/25)
 - [ ] working makefile
 
 magic scheme:   
