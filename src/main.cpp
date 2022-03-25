@@ -27,22 +27,25 @@ int main() {
     int height, width;
     getmaxyx(stdscr, height, width);
 
+    const int DIFF_SCROLL_H = height / 2 - 1;
+    const int DIFF_SCROLL_W = width / 2 - 1;
+
     int w = 1, h = 1;
     int w_m = 0, h_m = 0;
 
     while (true) {
         clear();
 
-        if (h >= height - 2) {
-            h_m = h - height + 2;
-        } else {
-            h_m = 0;
+        if (h_m > 0 && h < h_m + DIFF_SCROLL_H - 1) {
+            h_m = h - (DIFF_SCROLL_H - 1) >= 0 ? h - (DIFF_SCROLL_H - 1) : 0;
+        } else if (h >= h_m + height - DIFF_SCROLL_H) {
+            h_m = h - height + DIFF_SCROLL_H;
         }
 
-        if (w >= width - 2) {
-            w_m = w - width + 2;
-        } else {
-            w_m = 0;
+        if (w_m > 0 && w < w_m + DIFF_SCROLL_W - 1) {
+            w_m = w - (DIFF_SCROLL_W - 1) >= 0 ? w - (DIFF_SCROLL_W - 1) : 0;
+        } else if (w >= w_m + width - DIFF_SCROLL_W) {
+            w_m = w - width + DIFF_SCROLL_W;
         }
 
         log << "coord: h = " << h << ", w = " << w << ", h_m = " << h_m << ", w_m = " << w_m << std::endl;
