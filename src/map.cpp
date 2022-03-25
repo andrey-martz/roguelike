@@ -26,7 +26,7 @@ public:
             std::wstring s(str);
 
             if (s.size() > _width) {
-                _width = sizeof(str);
+                _width = s.size();
             }
 
             _map.emplace_back(s);
@@ -49,7 +49,7 @@ public:
 
     const std::wstring operator[] (int h) const {
         if (h < 0 || h > _height) {
-            return nullptr;
+            return std::wstring(L"");
         }
         return _map[h];
     }
@@ -66,8 +66,12 @@ public:
         std::vector<std::wstring> nw;
         
         for (int i = h; i < h + height && i < _height; ++i) {
-            int n = (_map[i].size() - w) < width ? _map[i].size() - w : width;
-            nw.push_back(_map[i].substr(w, n));
+            int n = (int(_map[i].size()) - w) < width ? _map[i].size() - w : width;
+            if (n < 0) {
+                nw.push_back(std::wstring(L""));
+            } else {
+                nw.push_back(_map[i].substr(w, n));
+            }
         }
 
         return Map(nw);
