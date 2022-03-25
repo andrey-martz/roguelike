@@ -13,15 +13,15 @@ public:
     Map(std::string filename)
     : _width(0)
     , _height(0) {
-        std::wifstream file(filename, std::ios_base::in);
-        if (!file.is_open()) {
-            std::cout << "unable to open map file" << std::endl;
+        FILE *f = fopen(filename.c_str(), "rt");
+        if (f == nullptr) {
             return;
         }
 
-        while (file.good() && !file.eof()) {
+        while (!feof(f)) {
             wchar_t str[MAX_LENGTH];
-            if (!file.getline(str, MAX_LENGTH, '\n')) {
+            
+            if (!fgetws(str, MAX_LENGTH, f)) {
                 break;
             }
 
@@ -33,7 +33,7 @@ public:
 
             _map.emplace_back(s);
         }
-        file.close();
+        fclose(f);
 
         _height = _map.size();
     }
