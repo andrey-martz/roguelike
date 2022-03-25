@@ -1,8 +1,9 @@
 # roguelike
 
 to-do list:
-- [ ] magnification
-- [ ] makefile?
+- [x] map scroll
+- [ ] more sophiscated map scroll
+- [ ] working makefile
 
 magic scheme:   
 F - FIRE  
