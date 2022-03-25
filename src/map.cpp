@@ -7,12 +7,10 @@ class Map {
     enum { MAX_LENGTH = 2048 };
     std::vector<std::wstring> _map;
 
-    size_t _width;
-    size_t _height;
+    size_t _width{0};
+    size_t _height{0};
 public:
-    Map(std::string filename)
-    : _width(0)
-    , _height(0) {
+    Map(std::string filename) {
         FILE *f = fopen(filename.c_str(), "rt");
         if (f == nullptr) {
             return;
@@ -49,15 +47,29 @@ public:
         }
     }
 
-    const std::wstring operator[] (int x) {
-        return _map[x];
+    const std::wstring operator[] (int h) const {
+        if (h < 0 || h > _height) {
+            return nullptr;
+        }
+        return _map[h];
     }
 
-    const size_t height() {
+    const size_t height() const {
         return _height;
     }
 
-    const size_t width() {
+    const size_t width() const {
         return _width;
+    }
+
+    Map part(const int w, const int h, const int width, const int height) const {
+        std::vector<std::wstring> nw;
+        
+        for (int i = h; i < h + height && i < _height; ++i) {
+            int n = (_map[i].size() - w) < width ? _map[i].size() - w : width;
+            nw.push_back(_map[i].substr(w, n));
+        }
+
+        return Map(nw);
     }
 };

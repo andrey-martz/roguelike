@@ -24,20 +24,37 @@ int main() {
 
     Map mp("/home/andrey/roguelike/map");
 
-    int row, col;
-    getmaxyx(stdscr, row, col);
+    int height, width;
+    getmaxyx(stdscr, height, width);
 
-    int x = 1, y = 1;
+    int w = 1, h = 1;
+    int w_m = 0, h_m = 0;
 
     while (true) {
         clear();
 
-        for (auto i = 0; i < mp.height(); ++i) {
-            mvaddwstr(i, 0, mp[i].c_str());
+        if (h >= height - 2) {
+            h_m = h - height + 2;
+        } else {
+            h_m = 0;
+        }
+
+        if (w >= width - 2) {
+            w_m = w - width + 2;
+        } else {
+            w_m = 0;
+        }
+
+        log << "coord: h = " << h << ", w = " << w << ", h_m = " << h_m << ", w_m = " << w_m << std::endl;
+
+        auto part = mp.part(w_m, h_m, width, height);
+
+        for (auto i = 0; i < part.height(); ++i) {
+            mvaddwstr(i, 0, part[i].c_str());
         }
 
         const wchar_t *c = L"▲";
-        mvaddwstr(y, x, c);
+        mvaddwstr(h - h_m, w - w_m, c);
 
         refresh();
         chtype in = getch();
@@ -47,26 +64,26 @@ int main() {
         switch (in) {
             case KEY_UP:
             case 'W':
-                if (mp[y - 1][x] == '.') {
-                    --y;
+                if (mp[h - 1][w] == '.') {
+                    --h;
                 }
             break;
             case KEY_DOWN:
             case 'S':
-                if (mp[y + 1][x] == '.') {
-                    ++y;
+                if (mp[h + 1][w] == '.') {
+                    ++h;
                 }
             break;
             case KEY_RIGHT:
             case 'D':
-                if (mp[y][x + 1] == '.') {
-                    ++x;
+                if (mp[h][w + 1] == '.') {
+                    ++w;
                 }
             break;
             case KEY_LEFT:
             case 'A':
-                if (mp[y][x - 1] == '.') {
-                    --x;
+                if (mp[h][w - 1] == '.') {
+                    --w;
                 }
             break;
             default:
