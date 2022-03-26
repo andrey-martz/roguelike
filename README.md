@@ -1,10 +1,10 @@
 # roguelike
 
 to-do list:
-- [ ] cofiguration file 
 - [ ] add color ehe :>
 - [ ] enemies...
 - [ ] working makefile
+- [x] cofiguration file (2022/03/26)
 - [x] more sophiscated map scroll (2022/03/25)
 - [x] map scroll (2022/03/25)
 
