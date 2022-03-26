@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "map.cpp"
+#include "control.cpp"
 
 int main() {
     setlocale(LC_CTYPE, "");
@@ -23,6 +24,7 @@ int main() {
     use_default_colors();
 
     Map mp("/home/andrey/roguelike/map");
+    Control ctrl("/home/andrey/roguelike/control");
 
     int height, width;
     getmaxyx(stdscr, height, width);
@@ -48,7 +50,7 @@ int main() {
             w_m = w - width + DIFF_SCROLL_W;
         }
 
-        log << "coord: h = " << h << ", w = " << w << ", h_m = " << h_m << ", w_m = " << w_m << std::endl;
+        //log << "coord: h = " << h << ", w = " << w << ", h_m = " << h_m << ", w_m = " << w_m << std::endl;
 
         auto part = mp.part(w_m, h_m, width, height);
 
@@ -64,43 +66,30 @@ int main() {
         in = toupper(in);
         bool flag = false;
 
-        switch (in) {
-            case KEY_UP:
-            case 'W':
-                if (mp[h - 1][w] == '.') {
-                    --h;
-                }
-            break;
-            case KEY_DOWN:
-            case 'S':
-                if (mp[h + 1][w] == '.') {
-                    ++h;
-                }
-            break;
-            case KEY_RIGHT:
-            case 'D':
-                if (mp[h][w + 1] == '.') {
-                    ++w;
-                }
-            break;
-            case KEY_LEFT:
-            case 'A':
-                if (mp[h][w - 1] == '.') {
-                    --w;
-                }
-            break;
-            default:
-            flag = true;
-        }
-        if (flag) {
+        if (in == ctrl.up) {
+            if (mp[h - 1][w] == '.') {
+                --h;
+            }
+        } else if (in == ctrl.down) {
+            if (mp[h + 1][w] == '.') {
+                ++h;
+            }
+        } else if (in == ctrl.right) {
+            if (mp[h][w + 1] == '.') {
+                ++w;
+            }
+        } else if (in == ctrl.left) {
+            if (mp[h][w - 1] == '.') {
+                --w;
+            }
+        } else {
             auto t = std::time(nullptr);
             auto *tm = localtime(&t);
 
-            log << "+ " << std::put_time(tm, "%Y/%m/%d %H:%M:%S ") << "get other key from WASD" << std::endl;
+            log << "+ " << std::put_time(tm, "%Y/%m/%d %H:%M:%S ") << "get other key from control: " << in << std::endl;
 
             break;
         }
-
     }
 
     clear();
