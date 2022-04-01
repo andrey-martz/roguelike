@@ -1,18 +1,17 @@
-#include <vector>
 #include <string>
+#include <vector>
 
 class Object {
-    unsigned _pos_x{0}, _pos_y{0}; // the left up corner
+    unsigned _pos_x{0}, _pos_y{0};  // the left up corner
     unsigned _width{1}, _height{1};
 
     std::vector<std::wstring> _image;
-public:
+
+   public:
     Object() {}
 
-    Object(const wchar_t *image, unsigned x = 0, unsigned y = 0) 
-    : _image(std::vector<std::wstring>{image}) 
-    , _pos_x(x) 
-    , _pos_y(y) {
+    Object(const wchar_t *image, unsigned x = 0, unsigned y = 0)
+        : _image(std::vector<std::wstring>{image}), _pos_x(x), _pos_y(y) {
         _height = _image.size();
 
         _width = 0;
@@ -23,11 +22,8 @@ public:
         }
     }
 
-
-    Object(std::vector<std::wstring> &image, unsigned x = 0, unsigned y = 0) 
-    : _image(image) 
-    , _pos_x(x) 
-    , _pos_y(y) {
+    Object(std::vector<std::wstring> &image, unsigned x = 0, unsigned y = 0)
+        : _image(image), _pos_x(x), _pos_y(y) {
         _height = _image.size();
 
         _width = 0;

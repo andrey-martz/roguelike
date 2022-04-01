@@ -1,24 +1,27 @@
-#include <vector>
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <vector>
 
 class Map {
     enum { MAX_LENGTH = 2048 };
     std::vector<std::wstring> _map;
 
+    std::wstring steppable{L" ."};
+
     size_t _width{0};
     size_t _height{0};
-public:
+
+   public:
     Map(std::string filename) {
-        FILE *f = fopen(filename.c_str(), "rt");
+        FILE* f = fopen(filename.c_str(), "rt");
         if (f == nullptr) {
             return;
         }
 
         while (!feof(f)) {
             wchar_t str[MAX_LENGTH];
-            
+
             if (!fgetws(str, MAX_LENGTH, f)) {
                 break;
             }
@@ -36,18 +39,16 @@ public:
         _height = _map.size();
     }
 
-    Map(std::vector<std::wstring>& m) 
-    : _map(m)
-    , _width(0)
-    , _height(m.size()) {
-        for (auto & elem: m) {
+    Map(std::vector<std::wstring>& m)
+        : _map(m), _width(0), _height(m.size()) {
+        for (auto& elem : m) {
             if (elem.size() > _width) {
                 _width = elem.size();
             }
         }
     }
 
-    const std::wstring operator[] (int h) const {
+    const std::wstring operator[](int h) const {
         if (h < 0 || h > _height) {
             return std::wstring(L"");
         }
@@ -64,7 +65,7 @@ public:
 
     Map part(const int w, const int h, const int width, const int height) const {
         std::vector<std::wstring> nw;
-        
+
         for (int i = h; i < h + height && i < _height; ++i) {
             int n = (int(_map[i].size()) - w) < width ? _map[i].size() - w : width;
             if (n < 0) {
@@ -75,5 +76,16 @@ public:
         }
 
         return Map(nw);
+    }
+
+    bool is_steppable(unsigned x, unsigned y) {
+        if (y >= _height) {
+            return false;
+        }
+        if (x >= _map[y].size()) {
+            return false;
+        }
+
+        return steppable.find(_map[y][x]) != std::string::npos;
     }
 };

@@ -1,10 +1,12 @@
-#include <fstream>
 #include <ncurses.h>
 
+#include <fstream>
+
 struct Control {
-private:
+   private:
     std::wstring avail = L"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-public:
+
+   public:
     wchar_t up, down, left, right;
     wchar_t a_up, a_down, a_left, a_right;
     wchar_t spell;

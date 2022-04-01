@@ -1,20 +1,25 @@
-#include <iostream>
 #include <ncurses.h>
+#include <unistd.h>
+
+#include <cstdlib>
 #include <fstream>
 #include <iomanip>
+#include <iostream>
 #include <vector>
-#include <unistd.h>
-#include <cstdlib>
 
-#include "map.cpp"
 #include "control.cpp"
+#include "map.cpp"
 #include "objects.cpp"
 
 int main() {
+    enum {
+        COLOR_NONE = -1
+    };
+
     setlocale(LC_CTYPE, "");
     std::srand(std::time(nullptr));
 
-    std::ofstream log ("../log.txt", std::ios_base::app | std::ios_base::ate | std::ios_base::out);
+    std::ofstream log("../log.txt", std::ios_base::app | std::ios_base::ate | std::ios_base::out);
     if (!log.is_open()) {
         std::cout << "unable to open log file." << std::endl;
         return 0;
@@ -24,7 +29,7 @@ int main() {
     noecho();
     keypad(stdscr, TRUE);
     curs_set(0);
-	start_color();
+    start_color();
     use_default_colors();
 
     Map mp("/home/andrey/roguelike/map");
@@ -56,7 +61,7 @@ int main() {
             w_m = w - width + DIFF_SCROLL_W;
         }
 
-        //log << "coord: h = " << h << ", w = " << w << ", h_m = " << h_m << ", w_m = " << w_m << std::endl;
+        // log << "coord: h = " << h << ", w = " << w << ", h_m = " << h_m << ", w_m = " << w_m << std::endl;
 
         auto part = mp.part(w_m, h_m, width, height);
 
@@ -64,7 +69,7 @@ int main() {
             mvaddwstr(i, 0, part[i].c_str());
         }
 
-        init_pair(1, COLOR_BLUE, COLOR_BLACK);
+        init_pair(1, COLOR_BLUE, COLOR_NONE);
         use_default_colors();
 
         attron(COLOR_PAIR(1));
@@ -73,7 +78,7 @@ int main() {
         }
         attroff(COLOR_PAIR(1));
 
-        init_pair(2, COLOR_MAGENTA, COLOR_BLACK);
+        init_pair(2, COLOR_MAGENTA, COLOR_NONE);
         use_default_colors();
 
         attron(COLOR_PAIR(2));
@@ -87,19 +92,19 @@ int main() {
         bool flag = false;
 
         if (in == ctrl.up) {
-            if (mp[h - 1][w] == '.') {
+            if (mp.is_steppable(w, h - 1)) {
                 --h;
             }
         } else if (in == ctrl.down) {
-            if (mp[h + 1][w] == '.') {
+            if (mp.is_steppable(w, h + 1)) {
                 ++h;
             }
         } else if (in == ctrl.right) {
-            if (mp[h][w + 1] == '.') {
+            if (mp.is_steppable(w + 1, h)) {
                 ++w;
             }
         } else if (in == ctrl.left) {
-            if (mp[h][w - 1] == '.') {
+            if (mp.is_steppable(w - 1, h)) {
                 --w;
             }
         } else {
@@ -111,35 +116,38 @@ int main() {
             break;
         }
 
-        unsigned mv = std::rand() % 8;
-        switch (mv) {
-            case 0:
-                monster.move(1, 0);
-                break;
-            case 1:
-                monster.move(0, 1);
-                break;
-            case 2:
-                monster.move(-1, 0);
-                break;
-            case 3:
-                monster.move(0, -1);
-                break;
-            case 4:
-                monster.move(1, 1);
-                break;
-            case 5:
-                monster.move(1, -1);
-                break;
-            case 6:
-                monster.move(-1, -1);
-                break;
-            case 7:
-                monster.move(-1, 1);
-                break;
+        bool moved = false;
+        while (!moved) {
+            unsigned mv = std::rand() % 4;
+            switch (mv) {
+                case 0:
+                    if (mp.is_steppable(monster.pos_x() + 1, monster.pos_y())) {
+                        monster.move(1, 0);
+                        moved = true;
+                    }
+                    break;
+                case 1:
+                    if (mp.is_steppable(monster.pos_x(), monster.pos_y() + 1)) {
+                        monster.move(0, 1);
+                        moved = true;
+                    }
+                    break;
+                case 2:
+                    if (mp.is_steppable(monster.pos_x() - 1, monster.pos_y())) {
+                        monster.move(-1, 0);
+                        moved = true;
+                    }
+                    break;
+                case 3:
+                    if (mp.is_steppable(monster.pos_x(), monster.pos_y() - 1)) {
+                        monster.move(0, -1);
+                        moved = true;
+                    }
+                    break;
+            }
         }
 
-        sleep(1/2);
+        sleep(1 / 2);
     }
 
     clear();
