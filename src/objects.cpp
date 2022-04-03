@@ -1,4 +1,7 @@
+#include <atomic>
+#include <chrono>
 #include <string>
+#include <thread>
 #include <vector>
 
 class Object {
@@ -65,7 +68,22 @@ class Object {
 };
 
 class Monster : public Object {
+    std::atomic_bool _ready_to_move{false};
+
+   public:
     using Object::Object;
+
+    void set_timer(int delay) {
+        std::thread([=]() {
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+            _ready_to_move.store(true);
+        }).detach();
+    }
+
+    bool is_ready() {
+        bool exp = true;
+        return _ready_to_move.compare_exchange_strong(exp, false);
+    }
 };
 
 class Player : Object {
