@@ -1,10 +1,10 @@
 # roguelike
 
 to-do list:
-- [ ] add color ehe :>
-- [ ] enemies...
+- [ ] fix slow movement of player
 - [ ] generation of control file (not now please)
 - [ ] working makefile
+- [x] enemies... (it is alive!) (2022/04/03)
 - [x] cofiguration file (2022/03/26)
 - [x] more sophiscated map scroll (2022/03/25)
 - [x] map scroll (2022/03/25)
