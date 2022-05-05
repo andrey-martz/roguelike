@@ -1,91 +1,67 @@
+#include "objects.h"
+
 #include <atomic>
 #include <chrono>
 #include <string>
 #include <thread>
 #include <vector>
 
-class Object {
-    unsigned _pos_x{0}, _pos_y{0};  // the left up corner
-    unsigned _width{1}, _height{1};
+// object
 
-    std::vector<std::wstring> _image;
+Object::Object(const Object& other)
+    : _pos_x(other._pos_x), _pos_y(other._pos_y), _width(other._width), _height(other._height), _image(other._image) {}
 
-   public:
-    Object() {}
+Object::Object(const wchar_t* image, const uint& x, const uint& y)
+    : _image(std::vector<std::wstring>{image}), _pos_x(x), _pos_y(y) {
+    _height = _image.size();
 
-    Object(const wchar_t *image, unsigned x = 0, unsigned y = 0)
-        : _image(std::vector<std::wstring>{image}), _pos_x(x), _pos_y(y) {
-        _height = _image.size();
-
-        _width = 0;
-        for (auto &elem : _image) {
-            if (elem.size() > _width) {
-                _width = elem.size();
-            }
+    _width = 0;
+    for (auto& elem : _image) {
+        if (elem.size() > _width) {
+            _width = elem.size();
         }
     }
+}
+Object::Object(std::vector<std::wstring>& image, const uint& x, const uint& y)
+    : _image(image), _pos_x(x), _pos_y(y) {
+    _height = _image.size();
 
-    Object(std::vector<std::wstring> &image, unsigned x = 0, unsigned y = 0)
-        : _image(image), _pos_x(x), _pos_y(y) {
-        _height = _image.size();
-
-        _width = 0;
-        for (auto &elem : _image) {
-            if (elem.size() > _width) {
-                _width = elem.size();
-            }
+    _width = 0;
+    for (auto& elem : _image) {
+        if (elem.size() > _width) {
+            _width = elem.size();
         }
     }
+}
+void Object::move(const uint& x, const uint& y) {
+    if (_pos_x + x < 0) {
+        _pos_x = 0;
+    } else {
+        _pos_x = x;
+    }
 
-    const unsigned pos_x() const {
-        return _pos_x;
+    if (_pos_y + y < 0) {
+        _pos_y = 0;
+    } else {
+        _pos_y = y;
     }
-    const unsigned pos_y() const {
-        return _pos_y;
-    }
-    const unsigned width() const {
-        return _width;
-    }
-    const unsigned height() const {
-        return _height;
-    }
-    void move(unsigned x, unsigned y) {
-        if (_pos_x + x < 0) {
-            _pos_x = 0;
-        } else {
-            _pos_x += x;
+}
+
+// monster
+
+std::pair<uint, uint> Monster::generate_step(Strategy strategy) {
+    if (strategy == Strategy::Random) {
+        uint mv = std::rand() % 4;
+        switch (mv) {
+            case 0:
+                return std::pair<uint, uint>(pos_x() + 1, pos_y());
+            case 1:
+                return std::pair<uint, uint>(pos_x() - 1, pos_y());
+            case 2:
+                return std::pair<uint, uint>(pos_x(), pos_y() + 1);
+            case 3:
+                return std::pair<uint, uint>(pos_x(), pos_y() - 1);
         }
-
-        if (_pos_y + y < 0) {
-            _pos_y = 0;
-        } else {
-            _pos_y += y;
-        }
     }
-    const std::vector<std::wstring> image() {
-        return _image;
-    }
-};
-
-class Monster : public Object {
-    std::atomic_bool _ready_to_move{false};
-
-   public:
-    using Object::Object;
-
-    void set_timer(int delay) {
-        std::thread([=]() {
-            std::this_thread::sleep_for(std::chrono::milliseconds(delay));
-            _ready_to_move.store(true);
-        }).detach();
-    }
-
-    bool is_ready() {
-        bool exp = true;
-        return _ready_to_move.compare_exchange_strong(exp, false);
-    }
-};
-
-class Player : Object {
-    using Object::Object;
-};
+    return {};
+}

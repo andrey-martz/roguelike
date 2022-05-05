@@ -7,19 +7,31 @@
 #include <iostream>
 #include <vector>
 
-#include "control.cpp"
-#include "map.cpp"
-#include "objects.cpp"
-
-#if defined(_WIN32) || defined(_WIN64)
-#include <windows.h>
-#define msleep(msec) Sleep(msec)
-#else
-#include <unistd.h>
-#define msleep(msec) usleep(msec)
-#endif
+#include "environment.h"
 
 int main() {
+    setlocale(LC_CTYPE, "");
+    std::srand(std::time(nullptr));
+    setlocale(LC_CTYPE, "");
+    initscr();
+    noecho();
+    keypad(stdscr, TRUE);
+    curs_set(0);
+    if (!has_colors()) {
+        std::cout << "Unable to display colors: try to use another terminal!";
+        return 0;
+    }
+    start_color();
+    use_default_colors();
+
+    Map mp("/home/andrey/roguelike/map");
+
+    Environment env{mp};
+    env.add_monster(L"M", 6, 7);
+    env.start();
+}
+
+/*int main() {
     enum {
         COLOR_NONE = -1
     };
@@ -60,7 +72,7 @@ int main() {
     int64_t interval = double(1 / fps) * 1000;
 
     Monster monster(L"M", 15, 4);
-    monster.set_timer(2000);
+    monster.set_point(2000);
 
     bool flag = true, is_changed = true;
 
@@ -140,12 +152,13 @@ int main() {
                 }
             }
             is_changed = true;
-            monster.set_timer(2000);
+            monster.set_point(2000);
         }
 
         timeout(interval);
         chtype in = getch();
         if (in != ERR) {
+            is_changed = true;
             in = toupper(in);
 
             if (in == ctrl.up) {
@@ -178,7 +191,7 @@ int main() {
     clear();
     log.close();
     endwin();
-}
+}*/
 
 /*
 while (true) {
