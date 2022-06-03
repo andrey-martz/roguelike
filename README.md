@@ -1,10 +1,10 @@
 # roguelike
 
 to-do list:
-- [ ] fix slow movement of player
+- [ ] monster interactions
 - [ ] generation of control file (not now please)
 - [ ] working makefile
-- [x] enemies... (it is alive!) (2022/04/03)
+- [x] enemies... (it is alive!) (2022/04/03 + 2022/05/05)
 - [x] cofiguration file (2022/03/26)
 - [x] more sophiscated map scroll (2022/03/25)
 - [x] map scroll (2022/03/25)
