@@ -46,14 +46,35 @@ class Monster : public Object {
 
     Strategy _strategy{Strategy::Random};
 
+    uint _max_hp{1}, _max_atk{1};
+    uint _hp{1}, _atk{1};
+
+    int _id;
+
    public:
     using Object::Object;
 
     Monster(const Monster& a) : Object(a) {}
 
     Monster operator=(const Monster& a) {
-        Monster b(a);
-        return b;
+        _point = a._point;
+        _strategy = a._strategy;
+        _max_hp = a._max_hp;
+        _max_atk = a._max_atk;
+        _hp = a._hp;
+        _atk = a._atk;
+
+        _id = a._id;
+
+        Object::operator=(a);
+        return *this;
+    }
+
+    void set_id(int id) {
+        _id = id;
+    }
+    const int id() const {
+        return _id;
     }
 
     void set_point(int delay) {
@@ -69,6 +90,22 @@ class Monster : public Object {
     std::pair<uint, uint> generate_step() {
         return generate_step(_strategy);
     }
+
+    const uint max_health() const {
+        return _max_hp;
+    }
+    const uint health() const {
+        return _hp;
+    }
+    const uint max_attack() const {
+        return _max_atk;
+    }
+    const uint attack() const {
+        return _atk;
+    }
+
+    bool is_alive();
+    void receive_damage(const uint&);
 
     ~Monster() {}
 };

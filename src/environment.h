@@ -33,7 +33,7 @@ class Environment {
         return _map;
     }
 
-    void add_monster(const wchar_t* image, const uint& x = 0, const uint& y = 0);
+    void add_monster(const wchar_t* image, const uint& x = 0, const uint& y = 0, const int& id = 0);
     bool stop();
     void process();
 

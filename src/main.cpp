@@ -1,3 +1,4 @@
+#include <fcntl.h>
 #include <ncurses.h>
 #include <unistd.h>
 
@@ -24,10 +25,19 @@ int main() {
     start_color();
     use_default_colors();
 
+    int log_fd = open("../log.txt", O_WRONLY);
+    if (log_fd == -1) {
+        std::cout << "Unable to open log file";
+        return 0;
+    }
+
+    close(2);
+    dup2(log_fd, 2);
+    close(log_fd);
+
     Map mp("/home/andrey/roguelike/map");
 
     Environment env{mp};
-    env.add_monster(L"M", 6, 7);
     env.start();
 }
 

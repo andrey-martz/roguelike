@@ -65,3 +65,14 @@ std::pair<uint, uint> Monster::generate_step(Strategy strategy) {
     }
     return {};
 }
+
+bool Monster::is_alive() {
+    return _hp > 0;
+}
+void Monster::receive_damage(const uint& damage) {
+    if (damage > _hp) {
+        _hp = 0;
+    } else {
+        _hp -= damage;
+    }
+}

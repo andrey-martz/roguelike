@@ -3,19 +3,15 @@
 #include <ncurses.h>
 
 #include <algorithm>
+#include <iostream>
 #include <map>
 #include <memory>
 #include <vector>
 
-void Environment::add_monster(const wchar_t* image, const uint& x, const uint& y) {
-    auto res = std::find_if(_monsters.begin(), _monsters.end(),
-                            [x, y](const Monster& m) {
-                                return m.pos_x() == x && m.pos_y() == y;
-                            });
-
-    if (res == _monsters.end()) {
-        _monsters.emplace_back(Monster(image, x, y));
-    }
+void Environment::add_monster(const wchar_t* image, const uint& x, const uint& y, const int& id) {
+    Monster m = Monster(image, x, y);
+    m.set_id(id);
+    _monsters.emplace_back(m);
 }
 
 bool Environment::stop() {
@@ -34,6 +30,9 @@ void Environment::process() {
     int w_m = 0, h_m = 0;
 
     int64_t interval = double(1) / _fps * 1000;
+
+    std::chrono::time_point<std::chrono::steady_clock> m_point{std::chrono::steady_clock::now() + std::chrono::seconds(1)};
+    int id = 0;
 
     while (!shut) {
         clear();
@@ -56,26 +55,44 @@ void Environment::process() {
             mvwaddwstr(_w, i, 0, part[i].c_str());
         }
 
-        std::for_each(_monsters.begin(), _monsters.end(),
-                      [this, h_m, w_m](Monster& m) {
-                          if (m.is_ready()) {
-                              auto res = m.generate_step();
+        // monster generator
 
-                              while (!_map.is_steppable(res.first, res.second)) {
-                                  res = m.generate_step();
-                              }
+        if (std::chrono::steady_clock::now() >= m_point) {
+            m_point = std::chrono::steady_clock::now() + std::chrono::seconds(1);
 
-                              m.move(res.first, res.second);
-                              m.set_point(2000);
-                          }
+            uint m_x = std::rand() % _map.width();
+            uint m_y = std::rand() % _map.height();
 
-                          init_pair(1, COLOR_BLUE, COLOR_NONE);
-                          use_default_colors();
+            while (!_map.is_steppable(m_x, m_y) || (m_x == w && m_y == h)) {
+                m_x = std::rand() % _map.width();
+                m_y = std::rand() % _map.height();
+            }
 
-                          attron(COLOR_PAIR(1));
-                          mvwaddwstr(_w, m.pos_y() - h_m, m.pos_x() - w_m, (m.image())[0].c_str());
-                          attroff(COLOR_PAIR(1));
-                      });
+            add_monster(L"M", m_x, m_y, id);
+            ++id;
+        }
+
+        //
+
+        for (auto& m : _monsters) {
+            if (m.is_ready()) {
+                auto res = m.generate_step();
+
+                while (!_map.is_steppable(res.first, res.second)) {
+                    res = m.generate_step();
+                }
+
+                m.move(res.first, res.second);
+                m.set_point(2000);
+            }
+
+            init_pair(1, COLOR_BLUE, COLOR_NONE);
+            use_default_colors();
+
+            attron(COLOR_PAIR(1));
+            mvwaddwstr(_w, m.pos_y() - h_m, m.pos_x() - w_m, (m.image())[0].c_str());
+            attroff(COLOR_PAIR(1));
+        }
 
         // player
         init_pair(2, COLOR_MAGENTA, COLOR_NONE);
@@ -106,12 +123,21 @@ void Environment::process() {
             }
 
             if (_map.is_steppable(coord.first, coord.second)) {
-                auto res = std::find_if(_monsters.begin(), _monsters.end(), [coord](Monster m) {
-                    return coord.first == m.pos_x() && coord.second == m.pos_y();
-                });
-                if (res == _monsters.end()) {
+                auto it = _monsters.begin();
+                for (; it != _monsters.end(); ++it) {
+                    if (coord.first == it->pos_x() && coord.second == it->pos_y()) {
+                        break;
+                    }
+                }
+
+                if (it == _monsters.end()) {
                     w = coord.first;
                     h = coord.second;
+                } else {
+                    it->receive_damage(1);
+                    if (!it->is_alive()) {
+                        _monsters.erase(it);
+                    }
                 }
             }
         }
